@@ -472,4 +472,12 @@ buildAllLocations(pages);
 // 5. Generate Blog hub and all 10 blog posts
 buildAllBlogs();
 
+// 6. Ensure public/assets is populated for Vercel CDN deployment
+const publicAssetsDir = path.join(__dirname, 'public', 'assets');
+if (!fs.existsSync(publicAssetsDir)) {
+  fs.mkdirSync(publicAssetsDir, { recursive: true });
+}
+fs.cpSync(path.join(__dirname, 'assets'), publicAssetsDir, { recursive: true });
+console.log('Synced assets/ to public/assets/ for Vercel CDN deployment');
+
 console.log('=== FULL REBUILD COMPLETED SUCCESSFULLY! ===');
