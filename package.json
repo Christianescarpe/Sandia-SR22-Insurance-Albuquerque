@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Sandia SR22 Insurance Albuquerque Website",
   "scripts": {
-    "start": "node server.js",
+    "start": "node dev-server.js",
     "build": "node build.js"
   },
   "author": "",

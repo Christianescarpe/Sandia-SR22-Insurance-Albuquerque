@@ -1,5 +1,10 @@
-// Vercel Serverless Function: POST /api/contact
-// Handles quote and contact form submissions
+function sendJson(res, statusCode, data) {
+  if (typeof res.status === 'function' && typeof res.json === 'function') {
+    return res.status(statusCode).json(data);
+  }
+  res.writeHead(statusCode, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify(data));
+}
 
 module.exports = async (req, res) => {
   // Set CORS headers
@@ -13,29 +18,44 @@ module.exports = async (req, res) => {
 
   // Handle preflight OPTIONS request
   if (req.method === 'OPTIONS') {
-    res.status(200).end();
+    if (typeof res.status === 'function') {
+      res.status(200).end();
+    } else {
+      res.writeHead(200);
+      res.end();
+    }
     return;
   }
 
   // Only allow POST
   if (req.method !== 'POST') {
-    res.status(405).json({
+    return sendJson(res, 405, {
       success: false,
       error: 'Method Not Allowed. Only POST requests are supported.'
     });
-    return;
   }
 
   try {
     // Parse body
     let body = req.body;
-    if (typeof body === 'string') {
+    if (!body && typeof req[Symbol.asyncIterator] === 'function') {
+      let raw = '';
+      for await (const chunk of req) {
+        raw += chunk;
+      }
+      try {
+        body = JSON.parse(raw);
+      } catch (e) {
+        body = {};
+      }
+    } else if (typeof body === 'string') {
       try {
         body = JSON.parse(body);
       } catch (e) {
-        // Fallback for form-urlencoded or raw text
         body = {};
       }
+    } else if (!body) {
+      body = {};
     }
 
     const name = (body.name || body.fullName || '').trim();
@@ -46,11 +66,10 @@ module.exports = async (req, res) => {
 
     // Basic Validation
     if (!name || !phone) {
-      res.status(400).json({
+      return sendJson(res, 400, {
         success: false,
         error: 'Missing required fields: Name and Phone Number are required.'
       });
-      return;
     }
 
     // Optional notification webhook (e.g. Slack / Discord / Zapier) via environment variable
@@ -82,7 +101,7 @@ module.exports = async (req, res) => {
     }
 
     // Success response
-    res.status(200).json({
+    return sendJson(res, 200, {
       success: true,
       message: 'Quote request received successfully. Our Albuquerque specialist will contact you shortly.',
       data: {
@@ -93,7 +112,7 @@ module.exports = async (req, res) => {
     });
   } catch (error) {
     console.error('Contact form submission error:', error);
-    res.status(500).json({
+    return sendJson(res, 500, {
       success: false,
       error: 'An internal server error occurred while processing your request.'
     });
