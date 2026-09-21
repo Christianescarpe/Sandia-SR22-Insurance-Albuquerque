@@ -233,6 +233,7 @@ function buildHtmlDocument({ title, metaDesc, currentUrl, bodyContent }) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="3OHCu-9zK-2DXPFOGlsLrLaH8mrzq1LaribyQLuDFuk" />
   <title>${title}</title>
   <meta name="description" content="${metaDesc}">
   <link rel="canonical" href="https://sandiasr22insurance.com${currentUrl}">
