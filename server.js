@@ -45,9 +45,7 @@ const server = http.createServer(async (req, res) => {
       }
 
       try {
-        delete require.cache[require.resolve('./api/contact')];
-        const handler = require('./api/contact');
-        await handler(req, res);
+        await contactHandler(req, res);
       } catch (err) {
         console.error('API Error:', err);
         res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -67,6 +65,11 @@ const server = http.createServer(async (req, res) => {
     filePath = filePath + '.html';
   } else if (!path.extname(filePath) && fs.existsSync(path.join(filePath, 'index.html'))) {
     filePath = path.join(filePath, 'index.html');
+  } else if (!fs.existsSync(filePath)) {
+    const publicPath = path.join(__dirname, 'public', pathname);
+    if (fs.existsSync(publicPath) && !fs.statSync(publicPath).isDirectory()) {
+      filePath = publicPath;
+    }
   }
 
   if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
