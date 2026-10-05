@@ -227,7 +227,7 @@ function renderLatestNewsSection(blogs) {
   </section>`;
 }
 
-const SITE_URL = (process.env.SITE_URL || 'https://sandia-sr-22-insurance-albuquerque.vercel.app').replace(/\/+$/, '');
+const SITE_URL = (process.env.SITE_URL || 'https://sr22insurancealbuquerque.site').replace(/\/+$/, '');
 
 function buildHtmlDocument({ title, metaDesc, currentUrl, bodyContent, ogImage, isBlog, datePublished }) {
   const canonicalUrl = `${SITE_URL}${currentUrl}`;
