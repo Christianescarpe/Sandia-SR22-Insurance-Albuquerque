@@ -1,8 +1,4 @@
 User-agent: *
 Allow: /
 
-# Disallow internal API and raw data files
-Disallow: /api/
-Disallow: /*.json$
-
 Sitemap: https://sr22insurancealbuquerque.site/sitemap.xml

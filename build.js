@@ -518,10 +518,6 @@ ${xmlUrls}
   const robotsTxt = `User-agent: *
 Allow: /
 
-# Disallow internal API and raw data files
-Disallow: /api/
-Disallow: /*.json$
-
 Sitemap: ${SITE_URL}/sitemap.xml
 `;
 
