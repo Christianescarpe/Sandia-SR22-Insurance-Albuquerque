@@ -5,6 +5,7 @@ const { buildAllLocations } = require('./build_locations');
 const { buildAllServices } = require('./build_services');
 const { buildAllBlogs } = require('./build_blogs');
 const {
+  SITE_URL,
   locationsList,
   renderContactForm,
   renderLatestNewsSection,
@@ -479,5 +480,66 @@ if (!fs.existsSync(publicAssetsDir)) {
 }
 fs.cpSync(path.join(__dirname, 'assets'), publicAssetsDir, { recursive: true });
 console.log('Synced assets/ to public/assets/ for Vercel CDN deployment');
+
+// 7. Generate sitemap.xml and robots.txt for Google Search Console indexing
+function buildSitemapAndRobots() {
+  console.log('Generating sitemap.xml and robots.txt...');
+  const currentDate = new Date().toISOString().split('T')[0];
+
+  // All 27 SEO URLs
+  const sitemapEntries = [
+    { url: '/', priority: '1.0', changefreq: 'weekly' },
+    { url: '/what-is-sr22/', priority: '0.9', changefreq: 'monthly' },
+    { url: '/how-to-get-an-sr22-in-albuquerque/', priority: '0.9', changefreq: 'monthly' },
+    { url: '/non-owners-sr22-insurance/', priority: '0.9', changefreq: 'monthly' },
+    { url: '/contact-us/', priority: '0.8', changefreq: 'monthly' },
+    { url: '/faq/', priority: '0.8', changefreq: 'monthly' },
+    // 10 Location pages
+    ...locationsList.map(loc => ({ url: loc.url, priority: '0.8', changefreq: 'monthly' })),
+    // Blog Hub
+    { url: '/blog/', priority: '0.8', changefreq: 'weekly' },
+    // 10 Blog Posts
+    ...processedBlogs.map(b => ({ url: b.url, priority: '0.7', changefreq: 'monthly' }))
+  ];
+
+  const xmlUrls = sitemapEntries.map(e => `  <url>
+    <loc>${SITE_URL}${e.url}</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>${e.changefreq}</changefreq>
+    <priority>${e.priority}</priority>
+  </url>`).join('\n');
+
+  const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${xmlUrls}
+</urlset>
+`;
+
+  const robotsTxt = `User-agent: *
+Allow: /
+
+# Disallow internal API and raw data files
+Disallow: /api/
+Disallow: /*.json$
+
+Sitemap: ${SITE_URL}/sitemap.xml
+`;
+
+  // Write to root
+  fs.writeFileSync('sitemap.xml', sitemapXml, 'utf8');
+  fs.writeFileSync('robots.txt', robotsTxt, 'utf8');
+
+  // Also write to public/ for Vercel CDN static serving
+  const publicDir = path.join(__dirname, 'public');
+  if (!fs.existsSync(publicDir)) {
+    fs.mkdirSync(publicDir, { recursive: true });
+  }
+  fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemapXml, 'utf8');
+  fs.writeFileSync(path.join(publicDir, 'robots.txt'), robotsTxt, 'utf8');
+
+  console.log(`Generated sitemap.xml with ${sitemapEntries.length} SEO URLs and robots.txt`);
+}
+
+buildSitemapAndRobots();
 
 console.log('=== FULL REBUILD COMPLETED SUCCESSFULLY! ===');

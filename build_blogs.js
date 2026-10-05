@@ -55,7 +55,7 @@ function generateBlogIndex() {
     <div class="container reveal">
       <h2>Have a Specific SR-22 Question?</h2>
       <p>Speak directly with an Albuquerque specialist to get fast, accurate answers and free rate comparisons.</p>
-      <a href="tel:+19842051805" class="cta-phone-link">📞 (984) 205-1805</a><br><br>
+      <a href="tel:+15054608649" class="cta-phone-link">📞 (505) 460-8649</a><br><br>
       <a href="/contact-us/" class="btn btn-primary">Speak With An Agent</a>
     </div>
   </section>
@@ -71,7 +71,7 @@ function generateBlogIndex() {
             <ul class="contact-info-list">
               <li class="contact-info-item">
                 <div class="contact-info-icon">📞</div>
-                <div><strong>Phone:</strong> <a href="tel:+19842051805">(984) 205-1805</a></div>
+                <div><strong>Phone:</strong> <a href="tel:+15054608649">(505) 460-8649</a></div>
               </li>
               <li class="contact-info-item">
                 <div class="contact-info-icon">🏢</div>
@@ -109,6 +109,9 @@ function generateSingleBlog(blog) {
     </li>
   `).join('');
 
+  // Replace leading <h1> in blog.htmlContent with <h2> to ensure exactly 1 unique H1 per page for Google indexing
+  const articleHtml = blog.htmlContent.replace(/<h1[^>]*>([\s\S]*?)<\/h1>/i, '<h2>$1</h2>');
+
   const bodyContent = `
   <section class="subpage-hero">
     <div class="container">
@@ -131,7 +134,7 @@ function generateSingleBlog(blog) {
           <div class="image-frame-container" style="margin-bottom: 30px;">
             <img src="/assets/images/${blog.image}" alt="${blog.title}" width="750" height="420">
           </div>
-          ${blog.htmlContent}
+          ${articleHtml}
         </article>
 
         <!-- Sidebar -->
@@ -140,7 +143,7 @@ function generateSingleBlog(blog) {
             <h3>Need SR-22 Insurance?</h3>
             <p style="font-size: 0.92rem; color: var(--text-muted);">Sandia SR22 Insurance provides same-day electronic MVD filings for Albuquerque and New Mexico drivers.</p>
             <div style="margin: 18px 0;">
-              <a href="tel:+19842051805" class="btn btn-primary btn-block btn-sm">📞 Call (984) 205-1805</a>
+              <a href="tel:+15054608649" class="btn btn-primary btn-block btn-sm">📞 Call (505) 460-8649</a>
             </div>
             <a href="/contact-us/" class="btn btn-outline-white btn-block btn-sm" style="color: var(--dark-bg); border-color: var(--light-border);">Request Free Quote</a>
           </div>
@@ -161,7 +164,7 @@ function generateSingleBlog(blog) {
     <div class="container reveal">
       <h2>Ready to Get Back on the Road?</h2>
       <p>Our experienced New Mexico insurance specialists submit your certificate directly to the state.</p>
-      <a href="tel:+19842051805" class="cta-phone-link">📞 (984) 205-1805</a><br><br>
+      <a href="tel:+15054608649" class="cta-phone-link">📞 (505) 460-8649</a><br><br>
       <a href="/contact-us/" class="btn btn-primary">Contact Sandia SR22 Insurance</a>
     </div>
   </section>
@@ -171,7 +174,10 @@ function generateSingleBlog(blog) {
     title: blog.title,
     metaDesc: blog.metaDesc,
     currentUrl: blog.url,
-    bodyContent
+    bodyContent,
+    ogImage: `/assets/images/${blog.image}`,
+    isBlog: true,
+    datePublished: "2026-02-15"
   });
 }
 

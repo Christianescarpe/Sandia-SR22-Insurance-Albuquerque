@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Disallow internal API and raw data files
+Disallow: /api/
+Disallow: /*.json$
+
+Sitemap: https://sandia-sr-22-insurance-albuquerque.vercel.app/sitemap.xml

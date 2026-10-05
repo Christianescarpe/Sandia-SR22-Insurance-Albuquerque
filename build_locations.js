@@ -113,7 +113,7 @@ function generateLocationPage(page) {
           <h1>${h1Title}</h1>
           ${introHtml}
           <div class="hero-cta-group">
-            <a href="tel:+19842051805" class="btn btn-primary">Call (984) 205-1805</a>
+            <a href="tel:+15054608649" class="btn btn-primary">Call (505) 460-8649</a>
             <a href="#quote-section" class="btn btn-outline-white">Get a Free Quote</a>
           </div>
         </div>
@@ -244,7 +244,7 @@ function generateLocationPage(page) {
       <h2>Need an SR-22 in New Mexico?</h2>
       <p>Speak directly with our Albuquerque specialists for instant rate comparison and same-day electronic filing.</p>
       <div>
-        <a href="tel:+19842051805" class="cta-phone-link">📞 (984) 205-1805</a>
+        <a href="tel:+15054608649" class="cta-phone-link">📞 (505) 460-8649</a>
       </div>
       <a href="#quote-section" class="btn btn-primary">Request a Free SR-22 Quote</a>
     </div>
@@ -254,14 +254,14 @@ function generateLocationPage(page) {
   <section class="section" id="quote-section">
     <div class="container">
       <div class="contact-grid">
-        ${renderContactForm("CONTACT WITH US", "Fill out the quick quote form below or call (984) 205-1805 to speak directly with an Albuquerque specialist.")}
+        ${renderContactForm("CONTACT WITH US", "Fill out the quick quote form below or call (505) 460-8649 to speak directly with an Albuquerque specialist.")}
         <div class="contact-map-wrap reveal">
           <div class="contact-info-card">
             <h3>Sandia SR22 Insurance Albuquerque</h3>
             <ul class="contact-info-list">
               <li class="contact-info-item">
                 <div class="contact-info-icon">📞</div>
-                <div><strong>Phone Number:</strong><br><a href="tel:+19842051805" style="color: var(--text-dark); font-weight: 700;">(984) 205-1805</a></div>
+                <div><strong>Phone Number:</strong><br><a href="tel:+15054608649" style="color: var(--text-dark); font-weight: 700;">(505) 460-8649</a></div>
               </li>
               <li class="contact-info-item">
                 <div class="contact-info-icon">🏢</div>

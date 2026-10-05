@@ -227,20 +227,169 @@ function renderLatestNewsSection(blogs) {
   </section>`;
 }
 
-function buildHtmlDocument({ title, metaDesc, currentUrl, bodyContent }) {
+const SITE_URL = (process.env.SITE_URL || 'https://sandia-sr-22-insurance-albuquerque.vercel.app').replace(/\/+$/, '');
+
+function buildHtmlDocument({ title, metaDesc, currentUrl, bodyContent, ogImage, isBlog, datePublished }) {
+  const canonicalUrl = `${SITE_URL}${currentUrl}`;
+  const defaultOgImage = `${SITE_URL}/assets/images/insurance-agent-reviewing-car-coverage-with-custom-2026-01-08-07-32-47-utc.webp`;
+  const imageToUse = ogImage ? (ogImage.startsWith('http') ? ogImage : `${SITE_URL}${ogImage}`) : defaultOgImage;
+
+  // JSON-LD Structured Data
+  const businessSchema = {
+    "@context": "https://schema.org",
+    "@type": "InsuranceAgency",
+    "@id": `${SITE_URL}/#organization`,
+    "name": "Sandia SR22 Insurance Albuquerque",
+    "url": SITE_URL,
+    "telephone": "+1-505-460-8649",
+    "description": "Sandia SR22 Insurance Albuquerque provides fast, low-cost New Mexico SR-22 insurance filings, same-day MVD certificate submissions, and high-risk driver coverage.",
+    "priceRange": "$$",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "2400 Rio Grande Blvd NW Ste j",
+      "addressLocality": "Albuquerque",
+      "addressRegion": "NM",
+      "postalCode": "87104",
+      "addressCountry": "US"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 35.1128,
+      "longitude": -106.6698
+    },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        "opens": "08:00",
+        "closes": "18:00"
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Saturday"],
+        "opens": "09:00",
+        "closes": "14:00"
+      }
+    ],
+    "areaServed": [
+      { "@type": "City", "name": "Albuquerque" },
+      { "@type": "City", "name": "Rio Rancho" },
+      { "@type": "AdministrativeArea", "name": "Bernalillo County" },
+      { "@type": "State", "name": "New Mexico" }
+    ]
+  };
+
+  const schemas = [businessSchema];
+
+  // Breadcrumb schema for subpages
+  if (currentUrl !== '/') {
+    const parts = currentUrl.replace(/^\/+|\/+$/g, '').split('/');
+    const itemListElement = [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": `${SITE_URL}/`
+      }
+    ];
+
+    if (parts.length === 1) {
+      itemListElement.push({
+        "@type": "ListItem",
+        "position": 2,
+        "name": title.split('|')[0].trim(),
+        "item": canonicalUrl
+      });
+    } else if (parts.length === 2 && parts[0] === 'blog') {
+      itemListElement.push({
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Blog",
+        "item": `${SITE_URL}/blog/`
+      });
+      itemListElement.push({
+        "@type": "ListItem",
+        "position": 3,
+        "name": title.split('|')[0].trim(),
+        "item": canonicalUrl
+      });
+    }
+
+    schemas.push({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": itemListElement
+    });
+  }
+
+  // Article schema for blog posts
+  if (isBlog) {
+    schemas.push({
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": canonicalUrl
+      },
+      "headline": title.split('|')[0].trim(),
+      "description": metaDesc,
+      "image": imageToUse,
+      "datePublished": datePublished || "2026-02-01",
+      "dateModified": datePublished || "2026-02-01",
+      "author": {
+        "@type": "Organization",
+        "name": "Sandia SR22 Insurance Albuquerque"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Sandia SR22 Insurance Albuquerque",
+        "logo": {
+          "@type": "ImageObject",
+          "url": defaultOgImage
+        }
+      }
+    });
+  }
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
   <meta name="google-site-verification" content="3OHCu-9zK-2DXPFOGlsLrLaH8mrzq1LaribyQLuDFuk" />
   <title>${title}</title>
   <meta name="description" content="${metaDesc}">
-  <link rel="canonical" href="https://sandiasr22insurance.com${currentUrl}">
+  <link rel="canonical" href="${canonicalUrl}">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="${isBlog ? 'article' : 'website'}">
+  <meta property="og:url" content="${canonicalUrl}">
+  <meta property="og:title" content="${title}">
+  <meta property="og:description" content="${metaDesc}">
+  <meta property="og:image" content="${imageToUse}">
+  <meta property="og:site_name" content="Sandia SR22 Insurance Albuquerque">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="${canonicalUrl}">
+  <meta name="twitter:title" content="${title}">
+  <meta name="twitter:description" content="${metaDesc}">
+  <meta name="twitter:image" content="${imageToUse}">
+
+  <!-- Preconnect & Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/style.css">
+
+  <!-- Schema.org JSON-LD -->
+  <script type="application/ld+json">
+${JSON.stringify(schemas.length === 1 ? schemas[0] : { "@context": "https://schema.org", "@graph": schemas }, null, 2)}
+  </script>
 </head>
 <body>
   ${renderHeader(currentUrl)}
@@ -254,6 +403,7 @@ function buildHtmlDocument({ title, metaDesc, currentUrl, bodyContent }) {
 }
 
 module.exports = {
+  SITE_URL,
   locationsList,
   getShieldSvg,
   renderTopBar,
