@@ -245,10 +245,12 @@ function generateFaqPage(page) {
   const introHtml = sections[0].replace(/<h1[^>]*>.*?<\/h1>/i, '').trim();
 
   let faqHtml = '';
+  const faqItems = [];
   for (let i = 1; i < sections.length; i++) {
     const hEnd = sections[i].indexOf('</h2>');
     const question = sections[i].substring(0, hEnd).trim();
     const answer = sections[i].substring(hEnd + 5).trim();
+    faqItems.push({ question, answer });
     faqHtml += `
     <div class="faq-item ${i === 1 ? 'active' : ''} reveal">
       <button class="faq-question" type="button" aria-expanded="${i === 1 ? 'true' : 'false'}">
@@ -321,7 +323,8 @@ function generateFaqPage(page) {
     title: page['SEO Title'],
     metaDesc: page['Meta Description'],
     currentUrl: '/faq/',
-    bodyContent
+    bodyContent,
+    faqItems
   });
 }
 

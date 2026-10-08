@@ -280,11 +280,15 @@ function generateLocationPage(page) {
   </section>
   `;
 
+  const locationName = page.Page.replace(/Location Page\s*[-–]\s*/i, '').trim();
+
   return buildHtmlDocument({
     title: page['SEO Title'],
     metaDesc: page['Meta Description'],
     currentUrl,
-    bodyContent
+    bodyContent,
+    isLocation: true,
+    locationName
   });
 }
 

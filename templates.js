@@ -227,9 +227,9 @@ function renderLatestNewsSection(blogs) {
   </section>`;
 }
 
-const SITE_URL = (process.env.SITE_URL || 'https://sr22insurancealbuquerque.site').replace(/\/+$/, '');
+const SITE_URL = (process.env.SITE_URL || 'https://www.sr22insurancealbuquerque.site').replace(/\/+$/, '');
 
-function buildHtmlDocument({ title, metaDesc, currentUrl, bodyContent, ogImage, isBlog, datePublished }) {
+function buildHtmlDocument({ title, metaDesc, currentUrl, bodyContent, ogImage, isBlog, datePublished, isService, serviceName, faqItems, isLocation, locationName }) {
   const canonicalUrl = `${SITE_URL}${currentUrl}`;
   const defaultOgImage = `${SITE_URL}/assets/images/insurance-agent-reviewing-car-coverage-with-custom-2026-01-08-07-32-47-utc.webp`;
   const imageToUse = ogImage ? (ogImage.startsWith('http') ? ogImage : `${SITE_URL}${ogImage}`) : defaultOgImage;
@@ -237,10 +237,10 @@ function buildHtmlDocument({ title, metaDesc, currentUrl, bodyContent, ogImage, 
   // JSON-LD Structured Data
   const businessSchema = {
     "@context": "https://schema.org",
-    "@type": "InsuranceAgency",
+    "@type": ["InsuranceAgency", "LocalBusiness"],
     "@id": `${SITE_URL}/#organization`,
     "name": "Sandia SR22 Insurance Albuquerque",
-    "url": SITE_URL,
+    "url": `${SITE_URL}/`,
     "telephone": "+1-505-460-8649",
     "description": "Sandia SR22 Insurance Albuquerque provides fast, low-cost New Mexico SR-22 insurance filings, same-day MVD certificate submissions, and high-risk driver coverage.",
     "priceRange": "$$",
@@ -272,7 +272,7 @@ function buildHtmlDocument({ title, metaDesc, currentUrl, bodyContent, ogImage, 
       }
     ],
     "areaServed": [
-      { "@type": "City", "name": "Albuquerque" },
+      { "@type": "City", "name": locationName || "Albuquerque" },
       { "@type": "City", "name": "Rio Rancho" },
       { "@type": "AdministrativeArea", "name": "Bernalillo County" },
       { "@type": "State", "name": "New Mexico" }
@@ -280,6 +280,21 @@ function buildHtmlDocument({ title, metaDesc, currentUrl, bodyContent, ogImage, 
   };
 
   const schemas = [businessSchema];
+
+  // WebSite Schema (on Homepage)
+  if (currentUrl === '/') {
+    schemas.push({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      "url": `${SITE_URL}/`,
+      "name": "Sandia SR22 Insurance Albuquerque",
+      "description": "Fast, low-cost New Mexico SR-22 insurance filings in Albuquerque with same-day MVD electronic submission.",
+      "publisher": {
+        "@id": `${SITE_URL}/#organization`
+      }
+    });
+  }
 
   // Breadcrumb schema for subpages
   if (currentUrl !== '/') {
@@ -319,6 +334,43 @@ function buildHtmlDocument({ title, metaDesc, currentUrl, bodyContent, ogImage, 
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       "itemListElement": itemListElement
+    });
+  }
+
+  // Service schema for service pages
+  if (isService && serviceName) {
+    schemas.push({
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "@id": `${canonicalUrl}#service`,
+      "name": serviceName,
+      "serviceType": "SR-22 Insurance Filing",
+      "provider": {
+        "@id": `${SITE_URL}/#organization`
+      },
+      "areaServed": [
+        { "@type": "City", "name": "Albuquerque" },
+        { "@type": "City", "name": "Rio Rancho" },
+        { "@type": "State", "name": "New Mexico" }
+      ],
+      "description": metaDesc
+    });
+  }
+
+  // FAQPage schema (where genuine FAQ items exist)
+  if (faqItems && faqItems.length > 0) {
+    schemas.push({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "@id": `${canonicalUrl}#faq`,
+      "mainEntity": faqItems.map(item => ({
+        "@type": "Question",
+        "name": item.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": item.answer.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+        }
+      }))
     });
   }
 

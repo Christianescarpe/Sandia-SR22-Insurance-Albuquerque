@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://sr22insurancealbuquerque.site/sitemap.xml
+Sitemap: https://www.sr22insurancealbuquerque.site/sitemap.xml

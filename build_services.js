@@ -280,7 +280,9 @@ function generateServicePage(page) {
     title: page['SEO Title'],
     metaDesc: page['Meta Description'],
     currentUrl,
-    bodyContent
+    bodyContent,
+    isService: true,
+    serviceName: page.Page || page['SEO Title'].split('|')[0].trim()
   });
 }
 
